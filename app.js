@@ -538,12 +538,25 @@ function renderDatabase(query) {
 
     const typeName = capitalizeFirst(item.type);
     const typeClass = item.type === 'definition' ? 'type-def' : 'type-result';
-    const nameDisplay = item.name ? item.name : '';
+
+    let nameHtml;
+    if (item.name) {
+      nameHtml = `<span class="db-item-name">${item.name}</span>`;
+    } else {
+      // Strip LaTeX and show truncated statement preview
+      const preview = item.statement
+        .replace(/\$[^$]+\$/g, '…')
+        .replace(/\\textbf\{([^}]+)\}/g, '$1')
+        .replace(/\\textit\{([^}]+)\}/g, '$1')
+        .replace(/\n/g, ' ')
+        .slice(0, 80);
+      nameHtml = `<span class="db-item-preview">${preview}…</span>`;
+    }
 
     html += `<div class="db-item" data-pdf-page="${item.pdfPage}">
       <span class="db-item-number">${item.number}</span>
       <span class="db-item-type ${typeClass}">${typeName}</span>
-      <span class="db-item-name">${nameDisplay}</span>
+      ${nameHtml}
     </div>`;
   });
 

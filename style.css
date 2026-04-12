@@ -814,6 +814,16 @@ html, body {
   color: var(--text);
 }
 
+.db-item-preview {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .db-no-results {
   padding: 20px;
   text-align: center;
