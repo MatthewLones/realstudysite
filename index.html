@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MATH 281 — Real Analysis Study Tool</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Landing Screen -->
+  <div id="landing-screen">
+    <div id="landing-prof-wrapper">
+      <img src="assets/prof.png" alt="Professor" id="landing-prof">
+    </div>
+    <p id="landing-text">Click to enter</p>
+  </div>
+
+  <!-- How It Works Overlay -->
+  <div id="how-it-works-overlay" class="hidden">
+    <div id="how-it-works-card">
+      <h2>How It Works</h2>
+      <ul>
+        <li><strong>Click Barty's face</strong> to get a random question or definition prompt.</li>
+        <li><strong>If you're stuck</strong>, click <em>Open in Notes</em> to check the answer.</li>
+        <li><strong>Rate yourself</strong> — Green (know it), Yellow (kinda), Red (don't know).</li>
+        <li><strong>Use filters</strong> at the top to focus on specific chapters, types, or ratings.</li>
+        <li><strong>Click chapter bars</strong> in the stats panel to see all items in that chapter.</li>
+      </ul>
+      <button id="how-it-works-dismiss">Got it!</button>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <header id="filter-bar">
+    <div class="filter-group">
+      <span class="filter-label">Chapter:</span>
+      <div class="filter-chips" id="chapter-filters">
+        <button class="chip active" data-chapter="1">Ch 1</button>
+        <button class="chip active" data-chapter="2">Ch 2</button>
+        <button class="chip active" data-chapter="3">Ch 3</button>
+        <button class="chip active" data-chapter="4">Ch 4</button>
+        <button class="chip active" data-chapter="5">Ch 5</button>
+        <button class="chip active" data-chapter="6">Ch 6</button>
+        <button class="chip active" data-chapter="7">Ch 7</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Type:</span>
+      <div class="filter-chips" id="type-filters">
+        <button class="chip active" data-type="definition">Definitions</button>
+        <button class="chip active" data-type="result">Results</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Status:</span>
+      <div class="filter-chips" id="bucket-filters">
+        <button class="chip active" data-bucket="unseen">Unseen</button>
+        <button class="chip active bucket-red" data-bucket="red">Red</button>
+        <button class="chip active bucket-yellow" data-bucket="yellow">Yellow</button>
+        <button class="chip active bucket-green" data-bucket="green">Green</button>
+      </div>
+    </div>
+    <button id="help-btn" title="How it works">?</button>
+  </header>
+
+  <!-- Main Split Panel -->
+  <main id="split-panel">
+    <!-- Left: PDF Viewer -->
+    <div id="pdf-panel">
+      <iframe id="pdf-viewer" src="281_notes.pdf#page=1" title="Course Notes PDF"></iframe>
+    </div>
+
+    <!-- Resizable Divider -->
+    <div id="divider"></div>
+
+    <!-- Right: Quiz Panel -->
+    <div id="quiz-panel">
+      <!-- Prof Face -->
+      <div id="prof-container">
+        <div id="prof-face-wrapper">
+          <img id="prof-face" src="assets/prof.png" alt="Click to get a question!" title="Click me!">
+        </div>
+        <p id="prof-prompt">Click to get a question!</p>
+      </div>
+
+      <!-- Question Card -->
+      <div id="question-card" class="hidden">
+        <div id="question-header">
+          <span id="question-type-badge"></span>
+          <span id="question-label"></span>
+        </div>
+        <div id="question-statement"></div>
+        <button id="open-in-notes" class="link-btn">Open in Notes</button>
+      </div>
+
+      <!-- Bucket Buttons -->
+      <div id="bucket-buttons" class="hidden">
+        <button class="bucket-btn green" id="btn-green" title="I know this well">Green</button>
+        <button class="bucket-btn yellow" id="btn-yellow" title="Somewhat familiar">Yellow</button>
+        <button class="bucket-btn red" id="btn-red" title="Don't know this">Red</button>
+        <button class="bucket-btn skip" id="btn-skip" title="Skip">Skip</button>
+      </div>
+
+      <!-- Stats -->
+      <div id="stats-panel">
+        <h3>Progress</h3>
+        <div id="stats-summary">
+          <span id="stat-total">0 / 0 seen</span>
+          <div id="stat-buckets">
+            <span class="stat-chip green">0</span>
+            <span class="stat-chip yellow">0</span>
+            <span class="stat-chip red">0</span>
+          </div>
+        </div>
+        <div id="chapter-progress"></div>
+        <div id="quick-filters">
+          <button class="quick-filter-btn" id="review-red">Review Red</button>
+          <button class="quick-filter-btn" id="review-yellow">Review Yellow</button>
+          <button class="quick-filter-btn" id="reset-all">Reset All</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Chapter Detail Modal -->
+  <div id="chapter-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title">Chapter X</h2>
+        <button id="modal-close">&times;</button>
+      </div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="data/questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

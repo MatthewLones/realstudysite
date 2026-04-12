@@ -1,0 +1,112 @@
+{
+  "items": [
+    {
+      "id": "lem-1.1",
+      "type": "lemma",
+      "chapter": 1,
+      "section": "1.2",
+      "number": "1.1",
+      "name": "Classification of Integer Pairs",
+      "statement": "If $(j, k)$ is a pair of nonnegative integers, then exactly one of the following statements holds:\n(i) $(j, k)$ is equivalent to $(m, 0)$ for a unique $m \\in \\mathbb{Z}_{>0}$;\n(ii) $(j, k)$ is equivalent to $(0, m)$ for a unique $m \\in \\mathbb{Z}_{>0}$;\n(iii) $(j, k)$ is equivalent to $(0, 0)$.",
+      "page": 13,
+      "pdfPage": 18,
+      "difficulty": "easy"
+    },
+    {
+      "id": "def-1.2",
+      "type": "definition",
+      "chapter": 1,
+      "section": "1.4",
+      "number": "1.2",
+      "name": "Bounded Set, Upper/Lower Bound, Least Upper/Greatest Lower Bound (Rationals)",
+      "statement": "Let $A \\subseteq \\mathbb{Q}$.\n(i) The set $A$ is \\textbf{bounded} if there exists $M \\in \\mathbb{Q}_{>0}$ such that $|q| \\leq M$ for all $q \\in A$.\n(ii) A \\textbf{lower bound} for $A$ is a number $\\ell \\in \\mathbb{Q}$ such that $\\ell \\leq q$ for all $q \\in A$.\n(iii) An \\textbf{upper bound} for $A$ is a number $u \\in \\mathbb{Q}$ such that $q \\leq u$ for all $q \\in A$.\n(iv) A number $\\ell \\in \\mathbb{Q}$ is a \\textbf{greatest lower bound} for $A$ if $\\ell' \\leq \\ell$ for every lower bound $\\ell'$ for $A$.\n(v) A number $u \\in \\mathbb{Q}$ is a \\textbf{least upper bound} for $A$ if $u \\leq u'$ for every upper bound $u'$ for $A$.",
+      "page": 15,
+      "pdfPage": 20,
+      "difficulty": "easy"
+    },
+    {
+      "id": "def-1.4",
+      "type": "definition",
+      "chapter": 1,
+      "section": "1.5",
+      "number": "1.4",
+      "name": "Cauchy Sequence and Convergence (Rationals)",
+      "statement": "Let $(q_n)$ be a sequence in $\\mathbb{Q}$.\n(i) The sequence $(q_n)$ is a \\textbf{Cauchy sequence} if, for every $\\epsilon \\in \\mathbb{Q}_{>0}$, there exists $N \\in \\mathbb{Z}_{>0}$ such that $|q_n - q_m| < \\epsilon$ for $m, n \\geq N$.\n(ii) The sequence $(q_n)$ \\textbf{converges} to $L \\in \\mathbb{Q}$ if, for every $\\epsilon \\in \\mathbb{Q}_{>0}$, there exists $N \\in \\mathbb{Z}_{>0}$ such that $|q_n - L| < \\epsilon$ for $n \\geq N$.",
+      "page": 16,
+      "pdfPage": 21,
+      "difficulty": "medium"
+    },
+    {
+      "id": "def-1.7",
+      "type": "definition",
+      "chapter": 1,
+      "section": "1.7",
+      "number": "1.7",
+      "name": "Bounded Below, Bounded Above, Bounded, Unbounded (Reals)",
+      "statement": "A nonempty subset $A$ of $\\mathbb{R}$ is said to be \\textbf{bounded below} if there is a number $s$ such that $s \\leq a$ for all $a \\in A$ and in this case any such number $s$ is called a \\textbf{lower bound} for $A$. Similarly, $A$ is said to be \\textbf{bounded above} if there is a number $t$ such that $a \\leq t$ for all $a \\in A$, and any such number $t$ is called an \\textbf{upper bound} for $A$. Finally, $A$ is said to be \\textbf{bounded} if it is both bounded below and bounded above and to be \\textbf{unbounded} if it is not bounded.",
+      "page": 20,
+      "pdfPage": 25,
+      "difficulty": "easy"
+    },
+    {
+      "id": "thm-1.9",
+      "type": "theorem",
+      "chapter": 1,
+      "section": "1.7",
+      "number": "1.9",
+      "name": "Least Upper Bound Property",
+      "statement": "Every nonempty subset of $\\mathbb{R}$ that is bounded above has a least upper bound, i.e., an upper bound that is smaller than any other upper bound. Similarly, every nonempty subset of $\\mathbb{R}$ that is bounded below has a greatest lower bound, i.e., a lower bound that is greater than any other lower bound.",
+      "page": 21,
+      "pdfPage": 26,
+      "difficulty": "hard"
+    },
+    {
+      "id": "def-1.10",
+      "type": "definition",
+      "chapter": 1,
+      "section": "1.7",
+      "number": "1.10",
+      "name": "Supremum and Infimum",
+      "statement": "Suppose that $A$ is a nonempty subset of $\\mathbb{R}$.\n(i) If $A$ is bounded above then the smallest upper bound for $A$ is called the \\textbf{least upper bound} or \\textbf{supremum} of $A$ and is denoted by $\\sup A$.\n(ii) If $A$ is bounded below then the largest lower bound for $A$ is called the \\textbf{greatest lower bound} or \\textbf{infimum} of $A$ and is denoted by $\\inf A$.",
+      "page": 21,
+      "pdfPage": 26,
+      "difficulty": "easy"
+    },
+    {
+      "id": "prop-1.11",
+      "type": "proposition",
+      "chapter": 1,
+      "section": "1.7",
+      "number": "1.11",
+      "name": "Monotonicity of Supremum",
+      "statement": "If $A$ and $B$ are two nonempty subsets of $\\mathbb{R}$ that are bounded above and if $A \\subseteq B$ then $\\sup A \\leq \\sup B$.",
+      "page": 21,
+      "pdfPage": 26,
+      "difficulty": "easy"
+    },
+    {
+      "id": "thm-1.12",
+      "type": "theorem",
+      "chapter": 1,
+      "section": "1.7",
+      "number": "1.12",
+      "name": "Characterization of Supremum",
+      "statement": "If $A$ is a nonempty subset of $\\mathbb{R}$ that is bounded above and if $s \\in \\mathbb{R}$ is an upper bound for $A$, then $s = \\sup A$ if and only if\n(i) $a \\leq s$ for all $a \\in A$ and\n(ii) $A \\cap (s - \\epsilon, s] \\neq \\emptyset$ for all $\\epsilon > 0$.",
+      "page": 21,
+      "pdfPage": 26,
+      "difficulty": "medium"
+    },
+    {
+      "id": "cor-1.13",
+      "type": "corollary",
+      "chapter": 1,
+      "section": "1.7",
+      "number": "1.13",
+      "name": null,
+      "statement": "If $A$ is a nonempty subset of $\\mathbb{R}$ that is bounded above and if $s = \\sup A$ then either $s \\in A$ or else $A \\cap (s - \\epsilon, s) \\neq \\emptyset$ for all $\\epsilon > 0$.",
+      "page": 21,
+      "pdfPage": 26,
+      "difficulty": "medium"
+    }
+  ]
+}
