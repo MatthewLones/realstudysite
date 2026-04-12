@@ -275,7 +275,11 @@ function showNoQuestions() {
 // ===== PDF Navigation (only on explicit click) =====
 function navigatePDF(pdfPage) {
   const viewer = document.getElementById('pdf-viewer');
-  viewer.src = `281_notes.pdf?t=${Date.now()}#page=${pdfPage}`;
+  // Remove and re-add iframe to force full reload with page anchor
+  const parent = viewer.parentNode;
+  const newViewer = viewer.cloneNode(false);
+  newViewer.src = `281_notes.pdf#page=${pdfPage}`;
+  parent.replaceChild(newViewer, viewer);
 }
 
 // ===== Bucket Buttons =====
