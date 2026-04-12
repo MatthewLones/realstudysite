@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupBucketButtons();
   setupQuickFilters();
   setupModal();
+  setupDatabase();
   setupLanding();
   setupHelpBtn();
   updateStats();
@@ -280,7 +281,7 @@ function navigatePDF(pdfPage) {
   const newViewer = document.createElement('iframe');
   newViewer.id = 'pdf-viewer';
   newViewer.title = 'Course Notes PDF';
-  newViewer.src = `281_notes.pdf#page=${pdfPage}&view=Fit`;
+  newViewer.src = `281_notes.pdf#page=${pdfPage - 1}&view=Fit`;
   parent.replaceChild(newViewer, viewer);
 }
 
@@ -388,6 +389,11 @@ function setupModal() {
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
+      const dbModal = document.getElementById('database-modal');
+      if (!dbModal.classList.contains('hidden')) {
+        dbModal.classList.add('hidden');
+        return;
+      }
       const modal = document.getElementById('chapter-modal');
       if (!modal.classList.contains('hidden')) {
         closeModal();
@@ -470,6 +476,86 @@ function openChapterModal(ch) {
 
 function closeModal() {
   document.getElementById('chapter-modal').classList.add('hidden');
+}
+
+// ===== Theorem Database =====
+function setupDatabase() {
+  const openBtn = document.getElementById('open-database');
+  const modal = document.getElementById('database-modal');
+  const closeBtn = document.getElementById('database-close');
+  const searchInput = document.getElementById('database-search');
+
+  openBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    renderDatabase('');
+    modal.classList.remove('hidden');
+    setTimeout(() => searchInput.focus(), 100);
+  });
+
+  closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.add('hidden');
+  });
+
+  searchInput.addEventListener('input', () => {
+    renderDatabase(searchInput.value.trim());
+  });
+}
+
+function renderDatabase(query) {
+  const body = document.getElementById('database-body');
+  const lowerQuery = query.toLowerCase();
+
+  const filtered = query === '' ? allItems : allItems.filter(item => {
+    const searchable = [
+      item.number,
+      item.type,
+      item.name || '',
+      item.statement,
+      `${item.chapter}`,
+      item.section
+    ].join(' ').toLowerCase();
+
+    // Split query into words, all must match
+    const words = lowerQuery.split(/\s+/);
+    return words.every(w => searchable.includes(w));
+  });
+
+  if (filtered.length === 0) {
+    body.innerHTML = '<div class="db-no-results">No results found.</div>';
+    return;
+  }
+
+  let html = '';
+  let currentChapter = null;
+
+  filtered.forEach(item => {
+    if (item.chapter !== currentChapter) {
+      currentChapter = item.chapter;
+      html += `<div class="db-chapter-heading">Chapter ${currentChapter}: ${CHAPTER_NAMES[currentChapter] || ''}</div>`;
+    }
+
+    const typeName = capitalizeFirst(item.type);
+    const typeClass = item.type === 'definition' ? 'type-def' : 'type-result';
+    const nameDisplay = item.name ? item.name : '';
+
+    html += `<div class="db-item" data-pdf-page="${item.pdfPage}">
+      <span class="db-item-number">${item.number}</span>
+      <span class="db-item-type ${typeClass}">${typeName}</span>
+      <span class="db-item-name">${nameDisplay}</span>
+    </div>`;
+  });
+
+  body.innerHTML = html;
+
+  body.querySelectorAll('.db-item').forEach(row => {
+    row.addEventListener('click', () => {
+      const page = parseInt(row.dataset.pdfPage);
+      navigatePDF(page);
+      document.getElementById('database-modal').classList.add('hidden');
+    });
+  });
 }
 
 // ===== Landing Screen =====

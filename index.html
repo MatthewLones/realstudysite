@@ -102,6 +102,9 @@
         <button class="bucket-btn skip" id="btn-skip" title="Skip">Skip</button>
       </div>
 
+      <!-- Database Button -->
+      <button id="open-database" class="link-btn database-btn">Theorem Database</button>
+
       <!-- Stats -->
       <div id="stats-panel">
         <h3>Progress</h3>
@@ -131,6 +134,20 @@
         <button id="modal-close">&times;</button>
       </div>
       <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Theorem Database Modal -->
+  <div id="database-modal" class="modal hidden">
+    <div class="modal-content database-modal-content">
+      <div class="modal-header">
+        <h2>Theorem Database</h2>
+        <button id="database-close">&times;</button>
+      </div>
+      <div id="database-search-wrapper">
+        <input type="text" id="database-search" placeholder="Search by name, number, keyword..." autocomplete="off" spellcheck="false">
+      </div>
+      <div id="database-body"></div>
     </div>
   </div>
 
