@@ -275,7 +275,7 @@ function showNoQuestions() {
 // ===== PDF Navigation (only on explicit click) =====
 function navigatePDF(pdfPage) {
   const viewer = document.getElementById('pdf-viewer');
-  viewer.src = `281_notes.pdf#page=${pdfPage}`;
+  viewer.src = `281_notes.pdf?t=${Date.now()}#page=${pdfPage}`;
 }
 
 // ===== Bucket Buttons =====
