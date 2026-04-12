@@ -275,10 +275,12 @@ function showNoQuestions() {
 // ===== PDF Navigation (only on explicit click) =====
 function navigatePDF(pdfPage) {
   const viewer = document.getElementById('pdf-viewer');
-  // Remove and re-add iframe to force full reload with page anchor
+  // Replace iframe to force a full fresh load — most reliable cross-browser
   const parent = viewer.parentNode;
-  const newViewer = viewer.cloneNode(false);
-  newViewer.src = `281_notes.pdf#page=${pdfPage}`;
+  const newViewer = document.createElement('iframe');
+  newViewer.id = 'pdf-viewer';
+  newViewer.title = 'Course Notes PDF';
+  newViewer.src = `281_notes.pdf#page=${pdfPage}&view=Fit`;
   parent.replaceChild(newViewer, viewer);
 }
 
