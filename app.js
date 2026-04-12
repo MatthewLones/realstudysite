@@ -543,14 +543,11 @@ function renderDatabase(query) {
     if (item.name) {
       nameHtml = `<span class="db-item-name">${item.name}</span>`;
     } else {
-      // Strip LaTeX and show truncated statement preview
+      // Show the raw statement verbatim, truncated with ...
       const preview = item.statement
-        .replace(/\$[^$]+\$/g, '…')
-        .replace(/\\textbf\{([^}]+)\}/g, '$1')
-        .replace(/\\textit\{([^}]+)\}/g, '$1')
         .replace(/\n/g, ' ')
-        .slice(0, 80);
-      nameHtml = `<span class="db-item-preview">${preview}…</span>`;
+        .slice(0, 100);
+      nameHtml = `<span class="db-item-preview">${preview}...</span>`;
     }
 
     html += `<div class="db-item" data-pdf-page="${item.pdfPage}">
@@ -561,6 +558,16 @@ function renderDatabase(query) {
   });
 
   body.innerHTML = html;
+
+  renderMathInElement(body, {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '$', right: '$', display: false },
+      { left: '\\(', right: '\\)', display: false },
+      { left: '\\[', right: '\\]', display: true }
+    ],
+    throwOnError: false
+  });
 
   body.querySelectorAll('.db-item').forEach(row => {
     row.addEventListener('click', () => {
