@@ -420,9 +420,23 @@ function setupModal() {
         const dotsPerRow = Math.max(1, Math.floor(trackWidth / 20)); // 18px dot + 2px gap
         const step = e.key === 'ArrowUp' ? -dotsPerRow : dotsPerRow;
         newIdx = currentIdx + step;
-        // Clamp: if overshoot, go to last; if undershoot, go to first
-        if (newIdx >= filtered.length) newIdx = filtered.length - 1;
-        if (newIdx < 0) newIdx = 0;
+        if (newIdx >= filtered.length) {
+          // Past bottom: go to top of next column (one to the right)
+          const col = currentIdx % dotsPerRow;
+          const nextCol = col + 1;
+          if (nextCol >= dotsPerRow || nextCol >= filtered.length) return;
+          newIdx = nextCol;
+        } else if (newIdx < 0) {
+          // Past top: go to bottom of previous column (one to the left)
+          const col = currentIdx % dotsPerRow;
+          const prevCol = col - 1;
+          if (prevCol < 0) return;
+          // Find the last row that has an item in prevCol
+          const totalRows = Math.ceil(filtered.length / dotsPerRow);
+          let lastRowInCol = totalRows - 1;
+          while (lastRowInCol * dotsPerRow + prevCol >= filtered.length) lastRowInCol--;
+          newIdx = lastRowInCol * dotsPerRow + prevCol;
+        }
         if (newIdx === currentIdx) return;
       }
 
