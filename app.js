@@ -2,6 +2,7 @@
 const STORAGE_KEY = 'realanalysis_buckets';
 const FILTER_STORAGE_KEY = 'realanalysis_filters';
 const NAME_STORAGE_KEY = 'realanalysis_username';
+const BANNED_USERS = ['alex'];
 let userName = localStorage.getItem(NAME_STORAGE_KEY) || '';
 let syncInterval = null;
 let allItems = [];
@@ -30,6 +31,16 @@ const CHAPTER_NAMES = {
 
 // ===== Init =====
 document.addEventListener('DOMContentLoaded', () => {
+  // Ban check
+  if (userName && BANNED_USERS.includes(userName.toLowerCase())) {
+    document.body.innerHTML = `
+      <div style="position:fixed;inset:0;background:#000;color:#ef4444;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:monospace;text-align:center;padding:20px;">
+        <h1 style="font-size:80px;margin-bottom:20px;letter-spacing:8px;">YOU'RE BANNED</h1>
+        <p style="font-size:18px;color:#9ca3af;">no cheaters allowed in barty's palace</p>
+      </div>
+    `;
+    return;
+  }
   if (typeof QUESTIONS !== 'undefined') {
     allItems = QUESTIONS;
   }
@@ -794,6 +805,10 @@ function setupNamePrompt() {
     if (!name) return;
     userName = name;
     localStorage.setItem(NAME_STORAGE_KEY, userName);
+    if (BANNED_USERS.includes(userName.toLowerCase())) {
+      location.reload();
+      return;
+    }
     modal.classList.add('hidden');
     pendingPush = true;
     actuallyPushNow();
@@ -989,7 +1004,7 @@ function renderUserProfile(body, user) {
 }
 
 // ===== Version Check =====
-const CURRENT_VERSION = 4;
+const CURRENT_VERSION = 5;
 function startVersionCheck() {
   setInterval(async () => {
     try {
