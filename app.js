@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateStats();
   renderTimeline(true);
   startSync();
+  startVersionCheck();
 });
 
 // ===== Type classification =====
@@ -864,6 +865,20 @@ function setupLeaderboard() {
   modal.addEventListener('click', (e) => {
     if (e.target === modal) modal.classList.add('hidden');
   });
+}
+
+// ===== Version Check =====
+const CURRENT_VERSION = 1;
+function startVersionCheck() {
+  setInterval(async () => {
+    try {
+      const res = await fetch('/version.json?t=' + Date.now());
+      const data = await res.json();
+      if (data.v > CURRENT_VERSION) {
+        location.reload();
+      }
+    } catch(e) {}
+  }, 30000);
 }
 
 // ===== Card Display =====
