@@ -420,10 +420,8 @@ function setupModal() {
         const dotsPerRow = Math.max(1, Math.floor(trackWidth / 20)); // 18px dot + 2px gap
         const step = e.key === 'ArrowUp' ? -dotsPerRow : dotsPerRow;
         newIdx = currentIdx + step;
-        // Wrap around
-        if (newIdx < 0) newIdx = Math.max(0, filtered.length + newIdx);
-        if (newIdx >= filtered.length) newIdx = newIdx - filtered.length;
-        newIdx = Math.max(0, Math.min(filtered.length - 1, newIdx));
+        // Clamp at edges, don't wrap
+        if (newIdx < 0 || newIdx >= filtered.length) return;
       }
 
       e.preventDefault();
