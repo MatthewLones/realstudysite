@@ -941,7 +941,7 @@ function renderUserProfile(body, user) {
 }
 
 // ===== Version Check =====
-const CURRENT_VERSION = 1;
+const CURRENT_VERSION = 2;
 function startVersionCheck() {
   setInterval(async () => {
     try {
