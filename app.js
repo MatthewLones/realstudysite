@@ -408,10 +408,22 @@ function setupModal() {
 
       const currentIdx = filtered.findIndex(i => i.id === currentItem.id);
       let newIdx;
-      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+
+      if (e.key === 'ArrowLeft') {
         newIdx = currentIdx <= 0 ? filtered.length - 1 : currentIdx - 1;
-      } else {
+      } else if (e.key === 'ArrowRight') {
         newIdx = currentIdx >= filtered.length - 1 ? 0 : currentIdx + 1;
+      } else {
+        // Up/Down: jump by dots-per-row
+        const track = document.getElementById('timeline-track');
+        const trackWidth = track.clientWidth;
+        const dotsPerRow = Math.max(1, Math.floor(trackWidth / 20)); // 18px dot + 2px gap
+        const step = e.key === 'ArrowUp' ? -dotsPerRow : dotsPerRow;
+        newIdx = currentIdx + step;
+        // Wrap around
+        if (newIdx < 0) newIdx = Math.max(0, filtered.length + newIdx);
+        if (newIdx >= filtered.length) newIdx = newIdx - filtered.length;
+        newIdx = Math.max(0, Math.min(filtered.length - 1, newIdx));
       }
 
       e.preventDefault();
