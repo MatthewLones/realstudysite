@@ -233,6 +233,7 @@ function serveQuestion(specificItem) {
   // "Open in Notes" button — only navigates PDF on click
   document.getElementById('open-in-notes').onclick = () => navigatePDF(currentItem.pdfPage);
 
+  const card = document.getElementById('question-card');
   card.classList.remove('hidden');
   card.style.animation = 'none';
   void card.offsetWidth;
