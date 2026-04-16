@@ -345,6 +345,71 @@ html, body {
   border-color: var(--accent);
 }
 
+/* ===== Timeline Strip ===== */
+#timeline-strip {
+  width: 100%;
+  max-width: 520px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+#timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+#timeline-position {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+#timeline-track {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+.tl-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 8px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  transition: all 0.1s;
+  padding: 0;
+}
+
+.tl-dot.unseen { background: var(--bg-elevated); }
+.tl-dot.green { background: var(--green-bg); border: 1px solid var(--green); }
+.tl-dot.yellow { background: var(--yellow-bg); border: 1px solid var(--yellow); }
+.tl-dot.red { background: var(--red-bg); border: 1px solid var(--red); }
+
+.tl-dot.current {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  transform: scale(1.15);
+}
+
+.tl-dot:hover {
+  transform: scale(1.25);
+  color: var(--text-muted);
+}
+
+.tl-dot:hover .tl-tooltip {
+  display: block;
+}
+
 /* ===== Question Card ===== */
 #question-card {
   width: 100%;

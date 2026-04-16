@@ -267,6 +267,8 @@ function serveQuestion() {
 
   document.getElementById('bucket-buttons').classList.remove('hidden');
   document.getElementById('prof-prompt').textContent = 'Click for another!';
+
+  if (sequentialMode) renderTimeline();
 }
 
 function showNoQuestions() {
@@ -492,11 +494,49 @@ function closeModal() {
 // ===== Mode Toggle =====
 function setupModeToggle() {
   const toggle = document.getElementById('mode-toggle');
+  const timeline = document.getElementById('timeline-strip');
+
   toggle.addEventListener('click', () => {
     sequentialMode = !sequentialMode;
     sequentialIndex = 0;
     toggle.textContent = sequentialMode ? 'In Order' : 'Random';
     toggle.classList.toggle('active', sequentialMode);
+
+    if (sequentialMode) {
+      timeline.classList.remove('hidden');
+      renderTimeline();
+    } else {
+      timeline.classList.add('hidden');
+    }
+  });
+}
+
+function renderTimeline() {
+  const track = document.getElementById('timeline-track');
+  const position = document.getElementById('timeline-position');
+  const filtered = getFilteredItems();
+
+  position.textContent = `${Math.min(sequentialIndex + 1, filtered.length)} / ${filtered.length}`;
+
+  track.innerHTML = '';
+  filtered.forEach((item, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'tl-dot';
+    const bucket = buckets[item.id] || 'unseen';
+    dot.classList.add(bucket);
+    if (i === sequentialIndex - 1 || (sequentialIndex === 0 && currentItem && item.id === currentItem.id)) {
+      dot.classList.add('current');
+    }
+
+    const label = `${item.number}${item.name ? ' — ' + item.name : ''}`;
+    dot.title = label;
+
+    dot.addEventListener('click', () => {
+      sequentialIndex = i;
+      serveQuestion();
+    });
+
+    track.appendChild(dot);
   });
 }
 
