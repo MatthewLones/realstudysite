@@ -163,6 +163,25 @@ html, body {
 }
 
 /* ===== Help Button ===== */
+#open-leaderboard {
+  padding: 4px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+#open-leaderboard:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 #help-btn {
   width: 28px;
   height: 28px;
@@ -174,7 +193,6 @@ html, body {
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
-  margin-left: auto;
   flex-shrink: 0;
 }
 
