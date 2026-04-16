@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupQuickFilters();
   setupModal();
   setupModeToggle();
+  setupExport();
   setupDatabase();
   setupLanding();
   setupHelpBtn();
@@ -496,6 +497,39 @@ function setupModeToggle() {
     sequentialIndex = 0;
     toggle.textContent = sequentialMode ? 'In Order' : 'Random';
     toggle.classList.toggle('active', sequentialMode);
+  });
+}
+
+// ===== Export CSV =====
+function setupExport() {
+  document.getElementById('export-csv').addEventListener('click', () => {
+    const headers = ['Number', 'Type', 'Chapter', 'Section', 'Name', 'Statement'];
+    const escapeCSV = (str) => {
+      if (!str) return '';
+      str = String(str);
+      if (str.includes('"') || str.includes(',') || str.includes('\n')) {
+        return '"' + str.replace(/"/g, '""') + '"';
+      }
+      return str;
+    };
+
+    const rows = allItems.map(item => [
+      item.number,
+      capitalizeFirst(item.type),
+      item.chapter,
+      item.section,
+      item.name || '',
+      item.statement
+    ].map(escapeCSV).join(','));
+
+    const csv = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'math281_theorems_definitions.csv';
+    a.click();
+    URL.revokeObjectURL(url);
   });
 }
 

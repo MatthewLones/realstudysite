@@ -732,10 +732,16 @@ html, body {
 .status-dot.red { background: var(--red); }
 .status-dot.unseen { background: var(--border); }
 
-/* ===== Database Button ===== */
-.database-btn {
+/* ===== Bottom Actions ===== */
+#bottom-actions {
+  display: flex;
+  gap: 10px;
   width: 100%;
   max-width: 520px;
+}
+
+.database-btn, .export-btn {
+  flex: 1;
   text-align: center;
   padding: 10px;
   font-size: 14px;
