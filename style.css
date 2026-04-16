@@ -398,16 +398,10 @@ html, body {
 .tl-dot.current {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
-  transform: scale(1.15);
 }
 
 .tl-dot:hover {
-  transform: scale(1.25);
-  color: var(--text-muted);
-}
-
-.tl-dot:hover .tl-tooltip {
-  display: block;
+  opacity: 0.5;
 }
 
 /* ===== Question Card ===== */
