@@ -887,8 +887,10 @@ function setupLeaderboard() {
       }
 
       const CHEATERS = ['alex'];
+      const NAME_OVERRIDES = { 'alex': 'Alex Levesque' };
       const legit = users.filter(u => !CHEATERS.includes(u.name.toLowerCase()));
-      const cheaters = users.filter(u => CHEATERS.includes(u.name.toLowerCase()));
+      const cheaters = users.filter(u => CHEATERS.includes(u.name.toLowerCase()))
+        .map(u => ({ ...u, name: NAME_OVERRIDES[u.name.toLowerCase()] || u.name }));
       leaderboardUsers = legit.concat(cheaters);
       renderLeaderboardList(body, legit, cheaters);
     } catch(e) {
