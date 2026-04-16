@@ -1057,6 +1057,32 @@ html, body {
   opacity: 0.6;
 }
 
+/* ===== Cheaters Section ===== */
+.lb-cheaters-header {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--red);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 16px 8px 6px;
+  border-top: 2px solid var(--red);
+  margin-top: 12px;
+}
+
+.lb-cheater {
+  opacity: 0.6;
+}
+
+.lb-cheater .lb-name {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.lb-cheater .lb-rank {
+  color: var(--red);
+  font-weight: 900;
+}
+
 /* ===== Leaderboard Profile ===== */
 .lb-clickable {
   cursor: pointer;

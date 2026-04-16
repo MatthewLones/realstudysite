@@ -871,8 +871,11 @@ function setupLeaderboard() {
         return;
       }
 
-      leaderboardUsers = users;
-      renderLeaderboardList(body, users);
+      const CHEATERS = ['alex'];
+      const legit = users.filter(u => !CHEATERS.includes(u.name.toLowerCase()));
+      const cheaters = users.filter(u => CHEATERS.includes(u.name.toLowerCase()));
+      leaderboardUsers = legit.concat(cheaters);
+      renderLeaderboardList(body, legit, cheaters);
     } catch(e) {
       document.getElementById('leaderboard-body').innerHTML = '<div class="db-no-results">Could not load progress.</div>';
     }
@@ -886,8 +889,8 @@ function setupLeaderboard() {
 
 let leaderboardUsers = [];
 
-function renderLeaderboardList(body, users) {
-  body.innerHTML = users.map((u, i) => `
+function renderLeaderboardList(body, users, cheaters) {
+  let html = users.map((u, i) => `
     <div class="lb-row lb-clickable" data-user-idx="${i}">
       <span class="lb-rank">${i + 1}</span>
       <span class="lb-name">${u.name}</span>
@@ -899,6 +902,24 @@ function renderLeaderboardList(body, users) {
       <span class="lb-seen">${u.seen} / ${u.total}</span>
     </div>
   `).join('');
+
+  if (cheaters && cheaters.length > 0) {
+    html += `<div class="lb-cheaters-header">Cheaters</div>`;
+    html += cheaters.map((u, i) => `
+      <div class="lb-row lb-clickable lb-cheater" data-user-idx="${users.length + i}">
+        <span class="lb-rank">×</span>
+        <span class="lb-name">${u.name}</span>
+        <div class="lb-stats">
+          <span class="lb-chip green">${u.green}</span>
+          <span class="lb-chip yellow">${u.yellow}</span>
+          <span class="lb-chip red">${u.red}</span>
+        </div>
+        <span class="lb-seen">${u.seen} / ${u.total}</span>
+      </div>
+    `).join('');
+  }
+
+  body.innerHTML = html;
 
   body.querySelectorAll('.lb-clickable').forEach(row => {
     row.addEventListener('click', () => {
@@ -968,7 +989,7 @@ function renderUserProfile(body, user) {
 }
 
 // ===== Version Check =====
-const CURRENT_VERSION = 3;
+const CURRENT_VERSION = 4;
 function startVersionCheck() {
   setInterval(async () => {
     try {
