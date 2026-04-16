@@ -1004,13 +1004,22 @@ function renderUserProfile(body, user) {
 }
 
 // ===== Version Check =====
-const CURRENT_VERSION = 5;
+const CURRENT_VERSION = 6;
 function startVersionCheck() {
+  // Track reload attempts to break infinite loops from cache
+  const reloadKey = 'realanalysis_last_reload';
+  const lastReload = parseInt(sessionStorage.getItem(reloadKey) || '0');
+  const now = Date.now();
+  // If we just reloaded in the last 60s, don't try again
+  const justReloaded = now - lastReload < 60000;
+
   setInterval(async () => {
     try {
-      const res = await fetch('/version.json?t=' + Date.now());
+      const res = await fetch('/version.json?t=' + Date.now(), { cache: 'no-store' });
       const data = await res.json();
-      if (data.v > CURRENT_VERSION) {
+      if (data.v > CURRENT_VERSION && !justReloaded) {
+        sessionStorage.setItem(reloadKey, String(Date.now()));
+        // Hard reload bypassing cache
         location.reload();
       }
     } catch(e) {}
