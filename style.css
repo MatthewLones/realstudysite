@@ -522,6 +522,14 @@ html, body {
 }
 .bucket-btn.red:hover { background: var(--red); color: #fff; }
 
+.bucket-btn.unseen {
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  border-color: var(--border);
+  flex: 0.7;
+}
+.bucket-btn.unseen:hover { border-color: var(--text-muted); color: var(--text); }
+
 .bucket-btn.skip {
   background: var(--bg-surface);
   color: var(--text-muted);

@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupLanding();
   setupHelpBtn();
   updateStats();
+  renderTimeline();
 });
 
 // ===== Type classification =====
@@ -268,7 +269,7 @@ function serveQuestion() {
   document.getElementById('bucket-buttons').classList.remove('hidden');
   document.getElementById('prof-prompt').textContent = 'Click for another!';
 
-  if (sequentialMode) renderTimeline();
+  renderTimeline();
 }
 
 function showNoQuestions() {
@@ -303,6 +304,14 @@ function setupBucketButtons() {
   document.getElementById('btn-green').addEventListener('click', () => bucketCurrent('green'));
   document.getElementById('btn-yellow').addEventListener('click', () => bucketCurrent('yellow'));
   document.getElementById('btn-red').addEventListener('click', () => bucketCurrent('red'));
+  document.getElementById('btn-unseen').addEventListener('click', () => {
+    if (!currentItem) return;
+    delete buckets[currentItem.id];
+    saveBuckets();
+    updateStats();
+    renderTimeline();
+    serveQuestion();
+  });
   document.getElementById('btn-skip').addEventListener('click', () => serveQuestion());
 }
 
@@ -502,12 +511,7 @@ function setupModeToggle() {
     toggle.textContent = sequentialMode ? 'In Order' : 'Random';
     toggle.classList.toggle('active', sequentialMode);
 
-    if (sequentialMode) {
-      timeline.classList.remove('hidden');
-      renderTimeline();
-    } else {
-      timeline.classList.add('hidden');
-    }
+    renderTimeline();
   });
 }
 
@@ -516,7 +520,8 @@ function renderTimeline() {
   const position = document.getElementById('timeline-position');
   const filtered = getFilteredItems();
 
-  position.textContent = `${Math.min(sequentialIndex + 1, filtered.length)} / ${filtered.length}`;
+  const currentIdx = currentItem ? filtered.findIndex(item => item.id === currentItem.id) : -1;
+  position.textContent = `${currentIdx >= 0 ? currentIdx + 1 : '–'} / ${filtered.length}`;
 
   track.innerHTML = '';
   filtered.forEach((item, i) => {
@@ -524,7 +529,7 @@ function renderTimeline() {
     dot.className = 'tl-dot';
     const bucket = buckets[item.id] || 'unseen';
     dot.classList.add(bucket);
-    if (i === sequentialIndex - 1 || (sequentialIndex === 0 && currentItem && item.id === currentItem.id)) {
+    if (currentItem && item.id === currentItem.id) {
       dot.classList.add('current');
     }
 
