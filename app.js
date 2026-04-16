@@ -398,6 +398,25 @@ function setupModal() {
         howItWorks.classList.add('hidden');
       }
     }
+
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      // Don't hijack arrows when typing in search
+      if (document.activeElement.tagName === 'INPUT') return;
+
+      const filtered = getFilteredItems();
+      if (filtered.length === 0 || !currentItem) return;
+
+      const currentIdx = filtered.findIndex(i => i.id === currentItem.id);
+      let newIdx;
+      if (e.key === 'ArrowLeft') {
+        newIdx = currentIdx <= 0 ? filtered.length - 1 : currentIdx - 1;
+      } else {
+        newIdx = currentIdx >= filtered.length - 1 ? 0 : currentIdx + 1;
+      }
+
+      e.preventDefault();
+      serveQuestion(filtered[newIdx]);
+    }
   });
 }
 
