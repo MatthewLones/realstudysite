@@ -513,11 +513,12 @@ function renderTimeline() {
     });
 
     dot.addEventListener('mouseenter', () => {
+      // Don't preview if this is already the current item
+      if (currentItem && item.id === currentItem.id) return;
       previewItem(item);
     });
 
     dot.addEventListener('mouseleave', () => {
-      // Restore the current item display
       if (currentItem) showItemOnCard(currentItem);
     });
 
