@@ -783,14 +783,9 @@ function setupNamePrompt() {
   const submit = document.getElementById('name-submit');
 
   if (!userName) {
-    // Show name prompt after landing screen is dismissed
-    const checkLanding = setInterval(() => {
-      if (!document.getElementById('landing-screen')) {
-        clearInterval(checkLanding);
-        modal.classList.remove('hidden');
-        setTimeout(() => input.focus(), 100);
-      }
-    }, 200);
+    // Show name prompt immediately (on top of landing screen if needed)
+    modal.classList.remove('hidden');
+    setTimeout(() => input.focus(), 300);
   }
 
   const saveName = () => {

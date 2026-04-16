@@ -927,6 +927,10 @@ html, body {
 }
 
 /* ===== Name Modal ===== */
+#name-modal {
+  z-index: 300;
+}
+
 .name-modal-content {
   max-width: 380px !important;
   width: 90% !important;
