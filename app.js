@@ -203,7 +203,7 @@ function setupProfClick() {
   });
 }
 
-function serveQuestion() {
+function serveQuestion(specificItem) {
   const filtered = getFilteredItems();
 
   if (filtered.length === 0) {
@@ -211,55 +211,27 @@ function serveQuestion() {
     return;
   }
 
-  let idx;
-  if (sequentialMode) {
-    if (sequentialIndex >= filtered.length) sequentialIndex = 0;
-    idx = sequentialIndex;
-    sequentialIndex++;
+  if (specificItem) {
+    currentItem = specificItem;
+    // Sync sequential index to this item's position
+    const pos = filtered.findIndex(i => i.id === specificItem.id);
+    if (pos >= 0) sequentialIndex = pos + 1;
   } else {
-    idx = Math.floor(Math.random() * filtered.length);
+    let idx;
+    if (sequentialMode) {
+      if (sequentialIndex >= filtered.length) sequentialIndex = 0;
+      idx = sequentialIndex;
+      sequentialIndex++;
+    } else {
+      idx = Math.floor(Math.random() * filtered.length);
+    }
+    currentItem = filtered[idx];
   }
-  currentItem = filtered[idx];
 
-  const card = document.getElementById('question-card');
-  const badge = document.getElementById('question-type-badge');
-  const label = document.getElementById('question-label');
-  const statement = document.getElementById('question-statement');
-  const openBtn = document.getElementById('open-in-notes');
-
-  // Type badge
-  const displayType = getDisplayType(currentItem);
-  badge.textContent = displayType;
-  badge.className = `badge-${displayType}`;
-
-  // Label: show original type (e.g. "Theorem 2.15 — Bolzano-Weierstrass")
-  const origType = capitalizeFirst(getOriginalType(currentItem));
-  const name = currentItem.name ? ` — ${currentItem.name}` : '';
-  label.textContent = `${origType} ${currentItem.number}${name} (Section ${currentItem.section})`;
-
-  // For definitions: show prompt instead of full statement
-  if (currentItem.type === 'definition') {
-    const name = currentItem.name || `Definition ${currentItem.number}`;
-    statement.innerHTML = `<em>State the definition of <strong>${name}</strong>.</em>`;
-  } else {
-    let text = currentItem.statement;
-    text = processTextFormatting(text);
-    text = text.replace(/\n/g, '<br>');
-    statement.innerHTML = text;
-
-    renderMathInElement(statement, {
-      delimiters: [
-        { left: '$$', right: '$$', display: true },
-        { left: '$', right: '$', display: false },
-        { left: '\\(', right: '\\)', display: false },
-        { left: '\\[', right: '\\]', display: true }
-      ],
-      throwOnError: false
-    });
-  }
+  showItemOnCard(currentItem);
 
   // "Open in Notes" button — only navigates PDF on click
-  openBtn.onclick = () => navigatePDF(currentItem.pdfPage);
+  document.getElementById('open-in-notes').onclick = () => navigatePDF(currentItem.pdfPage);
 
   card.classList.remove('hidden');
   card.style.animation = 'none';
@@ -537,8 +509,16 @@ function renderTimeline() {
     dot.title = label;
 
     dot.addEventListener('click', () => {
-      sequentialIndex = i;
-      serveQuestion();
+      serveQuestion(item);
+    });
+
+    dot.addEventListener('mouseenter', () => {
+      previewItem(item);
+    });
+
+    dot.addEventListener('mouseleave', () => {
+      // Restore the current item display
+      if (currentItem) showItemOnCard(currentItem);
     });
 
     track.appendChild(dot);
@@ -720,6 +700,74 @@ function setupHelpBtn() {
       overlay.classList.add('hidden');
     }
   });
+}
+
+// ===== Card Display =====
+function showItemOnCard(item) {
+  const badge = document.getElementById('question-type-badge');
+  const label = document.getElementById('question-label');
+  const statement = document.getElementById('question-statement');
+
+  const displayType = getDisplayType(item);
+  badge.textContent = displayType;
+  badge.className = `badge-${displayType}`;
+
+  const origType = capitalizeFirst(getOriginalType(item));
+  const name = item.name ? ` — ${item.name}` : '';
+  label.textContent = `${origType} ${item.number}${name} (Section ${item.section})`;
+
+  if (item.type === 'definition') {
+    const defName = item.name || `Definition ${item.number}`;
+    statement.innerHTML = `<em>State the definition of <strong>${defName}</strong>.</em>`;
+  } else {
+    let text = item.statement;
+    text = processTextFormatting(text);
+    text = text.replace(/\n/g, '<br>');
+    statement.innerHTML = text;
+
+    renderMathInElement(statement, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+        { left: '\\(', right: '\\)', display: false },
+        { left: '\\[', right: '\\]', display: true }
+      ],
+      throwOnError: false
+    });
+  }
+}
+
+function previewItem(item) {
+  const badge = document.getElementById('question-type-badge');
+  const label = document.getElementById('question-label');
+  const statement = document.getElementById('question-statement');
+  const card = document.getElementById('question-card');
+
+  const displayType = getDisplayType(item);
+  badge.textContent = displayType;
+  badge.className = `badge-${displayType}`;
+
+  const origType = capitalizeFirst(getOriginalType(item));
+  const name = item.name ? ` — ${item.name}` : '';
+  label.textContent = `${origType} ${item.number}${name} (Section ${item.section})`;
+
+  // Always show full statement for preview (even definitions)
+  let text = item.statement;
+  text = processTextFormatting(text);
+  text = text.replace(/\n/g, '<br>');
+  statement.innerHTML = text;
+
+  renderMathInElement(statement, {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '$', right: '$', display: false },
+      { left: '\\(', right: '\\)', display: false },
+      { left: '\\[', right: '\\]', display: true }
+    ],
+    throwOnError: false
+  });
+
+  card.classList.remove('hidden');
 }
 
 // ===== Helpers =====
