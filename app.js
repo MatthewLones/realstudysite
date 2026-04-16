@@ -4,6 +4,8 @@ const FILTER_STORAGE_KEY = 'realanalysis_filters';
 let allItems = [];
 let currentItem = null;
 let buckets = {}; // { itemId: 'green' | 'yellow' | 'red' }
+let sequentialMode = false;
+let sequentialIndex = 0;
 
 // Active filters
 let activeFilters = {
@@ -40,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupBucketButtons();
   setupQuickFilters();
   setupModal();
+  setupModeToggle();
   setupDatabase();
   setupLanding();
   setupHelpBtn();
@@ -206,7 +209,14 @@ function serveQuestion() {
     return;
   }
 
-  const idx = Math.floor(Math.random() * filtered.length);
+  let idx;
+  if (sequentialMode) {
+    if (sequentialIndex >= filtered.length) sequentialIndex = 0;
+    idx = sequentialIndex;
+    sequentialIndex++;
+  } else {
+    idx = Math.floor(Math.random() * filtered.length);
+  }
   currentItem = filtered[idx];
 
   const card = document.getElementById('question-card');
@@ -476,6 +486,17 @@ function openChapterModal(ch) {
 
 function closeModal() {
   document.getElementById('chapter-modal').classList.add('hidden');
+}
+
+// ===== Mode Toggle =====
+function setupModeToggle() {
+  const toggle = document.getElementById('mode-toggle');
+  toggle.addEventListener('click', () => {
+    sequentialMode = !sequentialMode;
+    sequentialIndex = 0;
+    toggle.textContent = sequentialMode ? 'In Order' : 'Random';
+    toggle.classList.toggle('active', sequentialMode);
+  });
 }
 
 // ===== Theorem Database =====
