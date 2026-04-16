@@ -44,6 +44,7 @@ export async function onRequestPost(context) {
     red,
     seen: green + yellow + red,
     total: 92,
+    buckets: buckets || {},
     updatedAt: new Date().toISOString()
   };
 

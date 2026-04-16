@@ -993,8 +993,9 @@ html, body {
 
 /* ===== Leaderboard ===== */
 .leaderboard-modal-content {
-  max-width: 500px !important;
+  max-width: 600px !important;
   width: 90% !important;
+  max-height: 85vh;
 }
 
 #leaderboard-body {
@@ -1054,6 +1055,116 @@ html, body {
   font-size: 10px;
   color: var(--text-muted);
   opacity: 0.6;
+}
+
+/* ===== Leaderboard Profile ===== */
+.lb-clickable {
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.lb-clickable:hover {
+  background: var(--bg-elevated);
+}
+
+.lb-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0 14px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.lb-back {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.lb-back:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.lb-profile-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  flex: 1;
+}
+
+.lb-chapter {
+  margin-bottom: 14px;
+}
+
+.lb-chapter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.lb-chapter-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.lb-chapter-count {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.lb-chapter-bar {
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+  margin-bottom: 6px;
+}
+
+.lb-chapter-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lb-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 4px;
+  font-size: 12px;
+  border-radius: 4px;
+}
+
+.lb-item-num {
+  font-weight: 700;
+  min-width: 30px;
+  color: var(--text);
+}
+
+.lb-item-type {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  min-width: 65px;
+}
+
+.lb-item-name {
+  color: var(--text-muted);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ===== Responsive ===== */

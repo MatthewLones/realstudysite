@@ -844,18 +844,8 @@ function setupLeaderboard() {
         return;
       }
 
-      body.innerHTML = users.map((u, i) => `
-        <div class="lb-row">
-          <span class="lb-rank">${i + 1}</span>
-          <span class="lb-name">${u.name}</span>
-          <div class="lb-stats">
-            <span class="lb-chip green">${u.green}</span>
-            <span class="lb-chip yellow">${u.yellow}</span>
-            <span class="lb-chip red">${u.red}</span>
-          </div>
-          <span class="lb-seen">${u.seen} / ${u.total}</span>
-        </div>
-      `).join('');
+      leaderboardUsers = users;
+      renderLeaderboardList(body, users);
     } catch(e) {
       document.getElementById('leaderboard-body').innerHTML = '<div class="db-no-results">Could not load progress.</div>';
     }
@@ -864,6 +854,89 @@ function setupLeaderboard() {
   closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
   modal.addEventListener('click', (e) => {
     if (e.target === modal) modal.classList.add('hidden');
+  });
+}
+
+let leaderboardUsers = [];
+
+function renderLeaderboardList(body, users) {
+  body.innerHTML = users.map((u, i) => `
+    <div class="lb-row lb-clickable" data-user-idx="${i}">
+      <span class="lb-rank">${i + 1}</span>
+      <span class="lb-name">${u.name}</span>
+      <div class="lb-stats">
+        <span class="lb-chip green">${u.green}</span>
+        <span class="lb-chip yellow">${u.yellow}</span>
+        <span class="lb-chip red">${u.red}</span>
+      </div>
+      <span class="lb-seen">${u.seen} / ${u.total}</span>
+    </div>
+  `).join('');
+
+  body.querySelectorAll('.lb-clickable').forEach(row => {
+    row.addEventListener('click', () => {
+      const idx = parseInt(row.dataset.userIdx);
+      renderUserProfile(body, leaderboardUsers[idx]);
+    });
+  });
+}
+
+function renderUserProfile(body, user) {
+  const userBuckets = user.buckets || {};
+
+  let html = `<div class="lb-profile-header">
+    <button class="lb-back">&larr; Back</button>
+    <span class="lb-profile-name">${user.name}</span>
+    <div class="lb-stats">
+      <span class="lb-chip green">${user.green}</span>
+      <span class="lb-chip yellow">${user.yellow}</span>
+      <span class="lb-chip red">${user.red}</span>
+      <span class="lb-seen">${user.seen} / ${user.total}</span>
+    </div>
+  </div>`;
+
+  for (let ch = 1; ch <= 7; ch++) {
+    const chapItems = allItems.filter(i => i.chapter === ch);
+    if (chapItems.length === 0) continue;
+
+    const chGreen = chapItems.filter(i => userBuckets[i.id] === 'green').length;
+    const chYellow = chapItems.filter(i => userBuckets[i.id] === 'yellow').length;
+    const chRed = chapItems.filter(i => userBuckets[i.id] === 'red').length;
+    const chTotal = chapItems.length;
+
+    html += `<div class="lb-chapter">
+      <div class="lb-chapter-header">
+        <span class="lb-chapter-title">Ch ${ch}: ${CHAPTER_NAMES[ch]}</span>
+        <span class="lb-chapter-count">${chGreen + chYellow + chRed}/${chTotal}</span>
+      </div>
+      <div class="lb-chapter-bar">
+        <div class="chapter-bar-fill-green" style="width: ${(chGreen / chTotal) * 100}%"></div>
+        <div class="chapter-bar-fill-yellow" style="width: ${(chYellow / chTotal) * 100}%"></div>
+        <div class="chapter-bar-fill-red" style="width: ${(chRed / chTotal) * 100}%"></div>
+      </div>
+      <div class="lb-chapter-items">`;
+
+    chapItems.forEach(item => {
+      const bucket = userBuckets[item.id] || 'unseen';
+      const origType = capitalizeFirst(item.type);
+      const typeClass = item.type === 'definition' ? 'type-def' : 'type-result';
+      const nameStr = item.name ? item.name : '';
+
+      html += `<div class="lb-item">
+        <span class="status-dot ${bucket}"></span>
+        <span class="lb-item-num">${item.number}</span>
+        <span class="lb-item-type ${typeClass}">${origType}</span>
+        <span class="lb-item-name">${nameStr}</span>
+      </div>`;
+    });
+
+    html += `</div></div>`;
+  }
+
+  body.innerHTML = html;
+
+  body.querySelector('.lb-back').addEventListener('click', () => {
+    renderLeaderboardList(body, leaderboardUsers);
   });
 }
 
