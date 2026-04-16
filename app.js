@@ -1,6 +1,9 @@
 // ===== State =====
 const STORAGE_KEY = 'realanalysis_buckets';
 const FILTER_STORAGE_KEY = 'realanalysis_filters';
+const NAME_STORAGE_KEY = 'realanalysis_username';
+let userName = localStorage.getItem(NAME_STORAGE_KEY) || '';
+let syncInterval = null;
 let allItems = [];
 let currentItem = null;
 let buckets = {}; // { itemId: 'green' | 'yellow' | 'red' }
@@ -47,8 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
   setupDatabase();
   setupLanding();
   setupHelpBtn();
+  setupNamePrompt();
+  setupLeaderboard();
   updateStats();
   renderTimeline(true);
+  startSync();
 });
 
 // ===== Type classification =====
@@ -298,6 +304,7 @@ function bucketCurrent(color) {
 
 function saveBuckets() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(buckets));
+  pushProgress();
 }
 
 // ===== Quick Filters =====
@@ -384,6 +391,11 @@ function setupModal() {
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
+      const lbModal = document.getElementById('leaderboard-modal');
+      if (!lbModal.classList.contains('hidden')) {
+        lbModal.classList.add('hidden');
+        return;
+      }
       const dbModal = document.getElementById('database-modal');
       if (!dbModal.classList.contains('hidden')) {
         dbModal.classList.add('hidden');
@@ -761,6 +773,101 @@ function setupHelpBtn() {
     if (e.target === overlay) {
       overlay.classList.add('hidden');
     }
+  });
+}
+
+// ===== Name & Sync =====
+function setupNamePrompt() {
+  const modal = document.getElementById('name-modal');
+  const input = document.getElementById('name-input');
+  const submit = document.getElementById('name-submit');
+
+  if (!userName) {
+    // Show name prompt after landing screen is dismissed
+    const checkLanding = setInterval(() => {
+      if (!document.getElementById('landing-screen')) {
+        clearInterval(checkLanding);
+        modal.classList.remove('hidden');
+        setTimeout(() => input.focus(), 100);
+      }
+    }, 200);
+  }
+
+  const saveName = () => {
+    const name = input.value.trim();
+    if (!name) return;
+    userName = name;
+    localStorage.setItem(NAME_STORAGE_KEY, userName);
+    modal.classList.add('hidden');
+    pushProgress();
+  };
+
+  submit.addEventListener('click', saveName);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') saveName();
+  });
+}
+
+function pushProgress() {
+  if (!userName) return;
+  fetch('/api/progress', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: userName, buckets })
+  }).catch(() => {});
+}
+
+function startSync() {
+  // Push progress every 30 seconds
+  syncInterval = setInterval(() => {
+    pushProgress();
+  }, 30000);
+
+  // Also push on every bucket change (saveBuckets is already called)
+}
+
+function setupLeaderboard() {
+  const openBtn = document.getElementById('open-leaderboard');
+  const modal = document.getElementById('leaderboard-modal');
+  const closeBtn = document.getElementById('leaderboard-close');
+
+  openBtn.addEventListener('click', async () => {
+    modal.classList.remove('hidden');
+    document.getElementById('leaderboard-body').innerHTML = '<div class="db-no-results">Loading...</div>';
+
+    try {
+      const res = await fetch('/api/progress');
+      const users = await res.json();
+
+      // Sort by most seen
+      users.sort((a, b) => b.seen - a.seen);
+
+      const body = document.getElementById('leaderboard-body');
+      if (users.length === 0) {
+        body.innerHTML = '<div class="db-no-results">No one has synced yet!</div>';
+        return;
+      }
+
+      body.innerHTML = users.map((u, i) => `
+        <div class="lb-row">
+          <span class="lb-rank">${i + 1}</span>
+          <span class="lb-name">${u.name}</span>
+          <div class="lb-stats">
+            <span class="lb-chip green">${u.green}</span>
+            <span class="lb-chip yellow">${u.yellow}</span>
+            <span class="lb-chip red">${u.red}</span>
+          </div>
+          <span class="lb-seen">${u.seen} / ${u.total}</span>
+        </div>
+      `).join('');
+    } catch(e) {
+      document.getElementById('leaderboard-body').innerHTML = '<div class="db-no-results">Could not load progress.</div>';
+    }
+  });
+
+  closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.add('hidden');
   });
 }
 

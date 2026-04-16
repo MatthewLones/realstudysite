@@ -135,6 +135,7 @@
       <div id="bottom-actions">
         <button id="open-database" class="link-btn database-btn">Theorem Database</button>
         <button id="export-csv" class="link-btn export-btn">Export CSV</button>
+        <button id="open-leaderboard" class="link-btn leaderboard-btn">Class Progress</button>
       </div>
     </div>
   </main>
@@ -147,6 +148,30 @@
         <button id="modal-close">&times;</button>
       </div>
       <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Name Prompt Modal -->
+  <div id="name-modal" class="modal hidden">
+    <div class="modal-content name-modal-content">
+      <div class="modal-header">
+        <h2>What's your name?</h2>
+      </div>
+      <div id="name-modal-body">
+        <input type="text" id="name-input" placeholder="Enter your name..." autocomplete="off" maxlength="30">
+        <button id="name-submit" class="link-btn primary-btn">Let's go!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaderboard Modal -->
+  <div id="leaderboard-modal" class="modal hidden">
+    <div class="modal-content leaderboard-modal-content">
+      <div class="modal-header">
+        <h2>Class Progress</h2>
+        <button id="leaderboard-close">&times;</button>
+      </div>
+      <div id="leaderboard-body"></div>
     </div>
   </div>
 
