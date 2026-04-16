@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupLanding();
   setupHelpBtn();
   updateStats();
-  renderTimeline();
+  renderTimeline(true);
 });
 
 // ===== Type classification =====
@@ -399,8 +399,7 @@ function setupModal() {
       }
     }
 
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-      // Don't hijack arrows when typing in search
+    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
       if (document.activeElement.tagName === 'INPUT') return;
 
       const filtered = getFilteredItems();
@@ -408,7 +407,7 @@ function setupModal() {
 
       const currentIdx = filtered.findIndex(i => i.id === currentItem.id);
       let newIdx;
-      if (e.key === 'ArrowLeft') {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
         newIdx = currentIdx <= 0 ? filtered.length - 1 : currentIdx - 1;
       } else {
         newIdx = currentIdx >= filtered.length - 1 ? 0 : currentIdx + 1;
@@ -506,14 +505,31 @@ function setupModeToggle() {
   });
 }
 
-function renderTimeline() {
+let timelineFiltered = []; // cache for arrow nav
+
+function renderTimeline(fullRebuild) {
   const track = document.getElementById('timeline-track');
   const position = document.getElementById('timeline-position');
   const filtered = getFilteredItems();
+  timelineFiltered = filtered;
 
   const currentIdx = currentItem ? filtered.findIndex(item => item.id === currentItem.id) : -1;
   position.textContent = `${currentIdx >= 0 ? currentIdx + 1 : '–'} / ${filtered.length}`;
 
+  // If not a full rebuild, just update classes on existing dots
+  if (!fullRebuild && track.children.length === filtered.length) {
+    Array.from(track.children).forEach((dot, i) => {
+      const item = filtered[i];
+      const bucket = buckets[item.id] || 'unseen';
+      dot.className = 'tl-dot ' + bucket;
+      if (currentItem && item.id === currentItem.id) {
+        dot.classList.add('current');
+      }
+    });
+    return;
+  }
+
+  // Full rebuild
   track.innerHTML = '';
   filtered.forEach((item, i) => {
     const dot = document.createElement('button');
@@ -532,7 +548,6 @@ function renderTimeline() {
     });
 
     dot.addEventListener('mouseenter', () => {
-      // Don't preview if this is already the current item
       if (currentItem && item.id === currentItem.id) return;
       previewItem(item);
     });
