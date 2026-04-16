@@ -795,7 +795,8 @@ function setupNamePrompt() {
     userName = name;
     localStorage.setItem(NAME_STORAGE_KEY, userName);
     modal.classList.add('hidden');
-    pushProgress();
+    pendingPush = true;
+    actuallyPushNow();
   };
 
   submit.addEventListener('click', saveName);
@@ -804,8 +805,27 @@ function setupNamePrompt() {
   });
 }
 
+let lastPushedBuckets = '';
+let pendingPush = false;
+
 function pushProgress() {
   if (!userName) return;
+  // Only push if something actually changed
+  const current = JSON.stringify(buckets);
+  if (current === lastPushedBuckets) return;
+  // Debounce — mark dirty and let the interval handle it
+  pendingPush = true;
+}
+
+function actuallyPushNow() {
+  if (!userName || !pendingPush) return;
+  const current = JSON.stringify(buckets);
+  if (current === lastPushedBuckets) {
+    pendingPush = false;
+    return;
+  }
+  lastPushedBuckets = current;
+  pendingPush = false;
   fetch('/api/progress', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -814,12 +834,19 @@ function pushProgress() {
 }
 
 function startSync() {
-  // Push progress every 30 seconds
+  // Push at most once every 60 seconds, only if dirty
   syncInterval = setInterval(() => {
-    pushProgress();
-  }, 30000);
+    actuallyPushNow();
+  }, 60000);
 
-  // Also push on every bucket change (saveBuckets is already called)
+  // Also push on tab close
+  window.addEventListener('beforeunload', () => {
+    if (pendingPush && userName) {
+      navigator.sendBeacon('/api/progress',
+        new Blob([JSON.stringify({ name: userName, buckets })], { type: 'application/json' })
+      );
+    }
+  });
 }
 
 function setupLeaderboard() {
@@ -941,7 +968,7 @@ function renderUserProfile(body, user) {
 }
 
 // ===== Version Check =====
-const CURRENT_VERSION = 2;
+const CURRENT_VERSION = 3;
 function startVersionCheck() {
   setInterval(async () => {
     try {
