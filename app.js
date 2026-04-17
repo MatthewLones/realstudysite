@@ -789,7 +789,7 @@ function setupLeaderboard() {
       return;
     }
 
-    const CHEATERS = ['alex'];
+    const CHEATERS = ['alex', 'zach', 'simon jarvis', 'rosie', 'ej'];
     const NAME_OVERRIDES = { 'alex': 'Alex Levesque' };
     const legit = users.filter(u => !CHEATERS.includes(u.name.toLowerCase()));
     const cheaters = users.filter(u => CHEATERS.includes(u.name.toLowerCase()))
