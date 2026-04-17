@@ -1,10 +1,6 @@
 // ===== State =====
 const STORAGE_KEY = 'realanalysis_buckets';
 const FILTER_STORAGE_KEY = 'realanalysis_filters';
-const NAME_STORAGE_KEY = 'realanalysis_username';
-const BANNED_USERS = ['alex'];
-let userName = localStorage.getItem(NAME_STORAGE_KEY) || '';
-let syncInterval = null;
 let allItems = [];
 let currentItem = null;
 let buckets = {}; // { itemId: 'green' | 'yellow' | 'red' }
@@ -31,16 +27,6 @@ const CHAPTER_NAMES = {
 
 // ===== Init =====
 document.addEventListener('DOMContentLoaded', () => {
-  // Ban check
-  if (userName && BANNED_USERS.includes(userName.toLowerCase())) {
-    document.body.innerHTML = `
-      <div style="position:fixed;inset:0;background:#000;color:#ef4444;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:monospace;text-align:center;padding:20px;">
-        <h1 style="font-size:80px;margin-bottom:20px;letter-spacing:8px;">YOU'RE BANNED</h1>
-        <p style="font-size:18px;color:#9ca3af;">no cheaters allowed in barty's palace</p>
-      </div>
-    `;
-    return;
-  }
   if (typeof QUESTIONS !== 'undefined') {
     allItems = QUESTIONS;
   }
@@ -61,12 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
   setupDatabase();
   setupLanding();
   setupHelpBtn();
-  setupNamePrompt();
   setupLeaderboard();
   updateStats();
   renderTimeline(true);
-  startSync();
-  startVersionCheck();
 });
 
 // ===== Type classification =====
@@ -316,7 +299,6 @@ function bucketCurrent(color) {
 
 function saveBuckets() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(buckets));
-  pushProgress();
 }
 
 // ===== Quick Filters =====
@@ -788,114 +770,32 @@ function setupHelpBtn() {
   });
 }
 
-// ===== Name & Sync =====
-function setupNamePrompt() {
-  const modal = document.getElementById('name-modal');
-  const input = document.getElementById('name-input');
-  const submit = document.getElementById('name-submit');
-
-  if (!userName) {
-    // Show name prompt immediately (on top of landing screen if needed)
-    modal.classList.remove('hidden');
-    setTimeout(() => input.focus(), 300);
-  }
-
-  const saveName = () => {
-    const name = input.value.trim();
-    if (!name) return;
-    userName = name;
-    localStorage.setItem(NAME_STORAGE_KEY, userName);
-    if (BANNED_USERS.includes(userName.toLowerCase())) {
-      location.reload();
-      return;
-    }
-    modal.classList.add('hidden');
-    pendingPush = true;
-    actuallyPushNow();
-  };
-
-  submit.addEventListener('click', saveName);
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') saveName();
-  });
-}
-
-let lastPushedBuckets = '';
-let pendingPush = false;
-
-function pushProgress() {
-  if (!userName) return;
-  // Only push if something actually changed
-  const current = JSON.stringify(buckets);
-  if (current === lastPushedBuckets) return;
-  // Debounce — mark dirty and let the interval handle it
-  pendingPush = true;
-}
-
-function actuallyPushNow() {
-  if (!userName || !pendingPush) return;
-  const current = JSON.stringify(buckets);
-  if (current === lastPushedBuckets) {
-    pendingPush = false;
-    return;
-  }
-  lastPushedBuckets = current;
-  pendingPush = false;
-  fetch('/api/progress', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: userName, buckets })
-  }).catch(() => {});
-}
-
-function startSync() {
-  // Push at most once every 60 seconds, only if dirty
-  syncInterval = setInterval(() => {
-    actuallyPushNow();
-  }, 60000);
-
-  // Also push on tab close
-  window.addEventListener('beforeunload', () => {
-    if (pendingPush && userName) {
-      navigator.sendBeacon('/api/progress',
-        new Blob([JSON.stringify({ name: userName, buckets })], { type: 'application/json' })
-      );
-    }
-  });
-}
-
+// ===== Leaderboard (Static) =====
 function setupLeaderboard() {
   const openBtn = document.getElementById('open-leaderboard');
   const modal = document.getElementById('leaderboard-modal');
   const closeBtn = document.getElementById('leaderboard-close');
 
-  openBtn.addEventListener('click', async () => {
+  openBtn.addEventListener('click', () => {
     modal.classList.remove('hidden');
-    document.getElementById('leaderboard-body').innerHTML = '<div class="db-no-results">Loading...</div>';
+    const body = document.getElementById('leaderboard-body');
 
-    try {
-      const res = await fetch('/api/progress');
-      const users = await res.json();
+    const users = (typeof LEADERBOARD_DATA !== 'undefined' ? LEADERBOARD_DATA : [])
+      .slice()
+      .sort((a, b) => b.seen - a.seen);
 
-      // Sort by most seen
-      users.sort((a, b) => b.seen - a.seen);
-
-      const body = document.getElementById('leaderboard-body');
-      if (users.length === 0) {
-        body.innerHTML = '<div class="db-no-results">No one has synced yet!</div>';
-        return;
-      }
-
-      const CHEATERS = ['alex'];
-      const NAME_OVERRIDES = { 'alex': 'Alex Levesque' };
-      const legit = users.filter(u => !CHEATERS.includes(u.name.toLowerCase()));
-      const cheaters = users.filter(u => CHEATERS.includes(u.name.toLowerCase()))
-        .map(u => ({ ...u, name: NAME_OVERRIDES[u.name.toLowerCase()] || u.name }));
-      leaderboardUsers = legit.concat(cheaters);
-      renderLeaderboardList(body, legit, cheaters);
-    } catch(e) {
-      document.getElementById('leaderboard-body').innerHTML = '<div class="db-no-results">Could not load progress.</div>';
+    if (users.length === 0) {
+      body.innerHTML = '<div class="db-no-results">No data available.</div>';
+      return;
     }
+
+    const CHEATERS = ['alex'];
+    const NAME_OVERRIDES = { 'alex': 'Alex Levesque' };
+    const legit = users.filter(u => !CHEATERS.includes(u.name.toLowerCase()));
+    const cheaters = users.filter(u => CHEATERS.includes(u.name.toLowerCase()))
+      .map(u => ({ ...u, name: NAME_OVERRIDES[u.name.toLowerCase()] || u.name }));
+    leaderboardUsers = legit.concat(cheaters);
+    renderLeaderboardList(body, legit, cheaters);
   });
 
   closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
@@ -924,7 +824,7 @@ function renderLeaderboardList(body, users, cheaters) {
     html += `<div class="lb-cheaters-header">Cheaters</div>`;
     html += cheaters.map((u, i) => `
       <div class="lb-row lb-clickable lb-cheater" data-user-idx="${users.length + i}">
-        <span class="lb-rank">×</span>
+        <span class="lb-rank">&times;</span>
         <span class="lb-name">${u.name}</span>
         <div class="lb-stats">
           <span class="lb-chip green">${u.green}</span>
@@ -1003,29 +903,6 @@ function renderUserProfile(body, user) {
   body.querySelector('.lb-back').addEventListener('click', () => {
     renderLeaderboardList(body, leaderboardUsers);
   });
-}
-
-// ===== Version Check =====
-const CURRENT_VERSION = 6;
-function startVersionCheck() {
-  // Track reload attempts to break infinite loops from cache
-  const reloadKey = 'realanalysis_last_reload';
-  const lastReload = parseInt(sessionStorage.getItem(reloadKey) || '0');
-  const now = Date.now();
-  // If we just reloaded in the last 60s, don't try again
-  const justReloaded = now - lastReload < 60000;
-
-  setInterval(async () => {
-    try {
-      const res = await fetch('/version.json?t=' + Date.now(), { cache: 'no-store' });
-      const data = await res.json();
-      if (data.v > CURRENT_VERSION && !justReloaded) {
-        sessionStorage.setItem(reloadKey, String(Date.now()));
-        // Hard reload bypassing cache
-        location.reload();
-      }
-    } catch(e) {}
-  }, 30000);
 }
 
 // ===== Card Display =====
